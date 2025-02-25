@@ -1,8 +1,8 @@
 const {execFileSync} = require(`child_process`);
 const {writeFileSync} = require(`fs`);
 
-execFileSync(`yarn`, [`add`, `-D`, `typescript`, `eslint`, `@yarnpkg/eslint-config`]);
-execFileSync(`yarn`, [`dlx`, `@yarnpkg/sdks`, `vscode`]);
+execFileSync(`yarn`, [`add`, `-D`, `typescript`, `eslint`, `@yarnpkg/eslint-config`], {stdio: `inherit`});
+execFileSync(`yarn`, [`dlx`, `@yarnpkg/sdks`, `vscode`], {stdio: `inherit`});
 
 writeFileSync(`eslint.config.mjs`, [
   `import yarnConfig from '@yarnpkg/eslint-config';\n`,
