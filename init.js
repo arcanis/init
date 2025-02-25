@@ -16,7 +16,7 @@ writeFileSync(`eslint.config.mjs`, [
   `  },\n`,
   `  ...yarnConfig,\n`,
   `];\n`,
-]);
+].join(``));
 
 writeFileSync(`tsconfig.json`, JSON.stringify({
   compilerOptions: {
