@@ -1,0 +1,4 @@
+{
+  "name": "@arcanis/init",
+  "bin": "./init.js"
+}
