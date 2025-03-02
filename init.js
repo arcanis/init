@@ -10,7 +10,7 @@ const {values, positionals} = parseArgs({
   },
 });
 
-const devDeps = [`typescript`, `eslint`, `@yarnpkg/eslint-config`];
+const devDeps = [`typescript`, `eslint`, `@yarnpkg/eslint-config`, `vitest`];
 
 if (values.vite)
   devDeps.push(`tailwindcss`, `@tailwindcss/vite`, `@vitejs/plugin-react`, `vite`, `react`, `react-dom`, `@types/react`, `@types/react-dom`);
@@ -23,6 +23,17 @@ const pkgJson = readFileSync(`package.json`, `utf8`);
 
 if (!pkgJson.includes(`"type":`))
   writeFileSync(`package.json`, pkgJson.replace(/("name":.*)/, `$1\n  "type": "module",`));
+
+mkdirSync(`.cursor/rules`, {recursive: true});
+
+writeFileSync(`.cursor/rules/package-manager.mdc`, [
+  `---`,
+  `description: Read this file when you need to use a package manager.`,
+  `globs:`,
+  `alwaysApply: false`,
+  `---`,
+  `Use Yarn. Never use npm or npx.`,
+].join(``));
 
 writeFileSync(`eslint.config.mjs`, [
   `import yarnConfig from '@yarnpkg/eslint-config';\n`,
@@ -66,7 +77,7 @@ writeFileSync(`tsconfig.json`, JSON.stringify({
 }, null, 2) + `\n`);
 
 if (values.vite) {
-  mkdirSync(`src`, {recursive: true});
+  mkdirSync(`sources`, {recursive: true});
 
   writeFileSync(`vite.config.ts`, [
     `import tailwindcss    from '@tailwindcss/vite';\n`,
@@ -86,20 +97,20 @@ if (values.vite) {
     `<html>\n`,
     `  <head>\n`,
     `    <meta charset="UTF-8"/>\n`,
-    `    <link rel="stylesheet" href="./src/index.css"/>\n`,
+    `    <link rel="stylesheet" href="./sources/index.css"/>\n`,
     `  </head>\n`,
     `  <body>\n`,
     `    <div id="root"></div>\n`,
-    `    <script type="module" src="./src/index.tsx"></script>\n`,
+    `    <script type="module" src="./sources/index.tsx"></script>\n`,
     `  </body>\n`,
     `</html>\n`,
   ].join(``));
 
-  writeFileSync(`src/index.css`, [
+  writeFileSync(`sources/index.css`, [
     `@import "tailwindcss";\n`,
   ].join(``));
 
-  writeFileSync(`src/index.tsx`, [
+  writeFileSync(`sources/index.tsx`, [
     `import './index.css';\n`,
     `\n`,
     `import {createRoot} from 'react-dom/client';\n`,
@@ -114,7 +125,7 @@ if (values.vite) {
     `);\n`,
   ].join(``));
 
-  writeFileSync(`src/App.tsx`, [
+  writeFileSync(`sources/App.tsx`, [
     `export function App() {\n`,
     `  return (\n`,
     `    null\n`,
