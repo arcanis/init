@@ -1,5 +1,5 @@
 const {execFileSync} = require(`child_process`);
-const {mkdirSync, writeFileSync} = require(`fs`);
+const {mkdirSync, readFileSync, writeFileSync} = require(`fs`);
 const {parseArgs} = require(`util`);
 
 const {values, positionals} = parseArgs({
