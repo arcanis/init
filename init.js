@@ -19,6 +19,11 @@ execFileSync(`yarn`, [`add`, `-D`, ...devDeps], {stdio: `inherit`});
 console.log(``);
 execFileSync(`yarn`, [`dlx`, `@yarnpkg/sdks`, `vscode`], {stdio: `inherit`});
 
+const pkgJson = readFileSync(`package.json`, `utf8`);
+
+if (!pkgJson.includes(`"type":`))
+  writeFileSync(`package.json`, pkgJson.replace(/("name":.*)/, `$1\n  "type": "module"`));
+
 writeFileSync(`eslint.config.mjs`, [
   `import yarnConfig from '@yarnpkg/eslint-config';\n`,
   `\n`,
@@ -85,7 +90,7 @@ if (values.vite) {
     `  </head>\n`,
     `  <body>\n`,
     `    <div id="root"></div>\n`,
-    `    <script type="module" src="./src/index.ts"></script>\n`,
+    `    <script type="module" src="./src/index.tsx"></script>\n`,
     `  </body>\n`,
     `</html>\n`,
   ].join(``));
@@ -94,7 +99,7 @@ if (values.vite) {
     `@import "tailwindcss";\n`,
   ].join(``));
 
-  writeFileSync(`src/index.ts`, [
+  writeFileSync(`src/index.tsx`, [
     `import './index.css';\n`,
     `\n`,
     `import {createRoot} from 'react-dom/client';\n`,
