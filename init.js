@@ -117,7 +117,7 @@ if (values.vite) {
   writeFileSync(`src/App.tsx`, [
     `export function App() {\n`,
     `  return (\n`,
-    `    null,\n`,
+    `    null\n`,
     `  );\n`,
     `}\n`,
   ].join(``));
