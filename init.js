@@ -13,7 +13,7 @@ const {values, positionals} = parseArgs({
 const devDeps = [`typescript`, `eslint`, `@yarnpkg/eslint-config`];
 
 if (values.vite)
-  devDeps.push(`tailwindcss`, `@tailwindcss/vite`, `@vitejs/plugin-react`, `vite`);
+  devDeps.push(`tailwindcss`, `@tailwindcss/vite`, `@vitejs/plugin-react`, `vite`, `react`, `react-dom`, `@types/react`, `@types/react-dom`);
 
 execFileSync(`yarn`, [`add`, `-D`, ...devDeps], {stdio: `inherit`});
 console.log(``);
@@ -22,7 +22,7 @@ execFileSync(`yarn`, [`dlx`, `@yarnpkg/sdks`, `vscode`], {stdio: `inherit`});
 const pkgJson = readFileSync(`package.json`, `utf8`);
 
 if (!pkgJson.includes(`"type":`))
-  writeFileSync(`package.json`, pkgJson.replace(/("name":.*)/, `$1\n  "type": "module"`));
+  writeFileSync(`package.json`, pkgJson.replace(/("name":.*)/, `$1\n  "type": "module",`));
 
 writeFileSync(`eslint.config.mjs`, [
   `import yarnConfig from '@yarnpkg/eslint-config';\n`,
