@@ -13,7 +13,7 @@ const {values, positionals} = parseArgs({
 const devDeps = [`typescript`, `eslint`, `@yarnpkg/eslint-config`];
 
 if (values.vite)
-  devDeps.push(`tailwindcss`, `@tailwindcss/vite`);
+  devDeps.push(`tailwindcss`, `@tailwindcss/vite`, `@vitejs/plugin-react`, `vite`);
 
 execFileSync(`yarn`, [`add`, `-D`, ...devDeps], {stdio: `inherit`});
 console.log(``);
@@ -61,7 +61,7 @@ writeFileSync(`tsconfig.json`, JSON.stringify({
 }, null, 2) + `\n`);
 
 if (values.vite) {
-  mkdirSync(`src`);
+  mkdirSync(`src`, {recursive: true});
 
   writeFileSync(`vite.config.ts`, [
     `import tailwindcss    from '@tailwindcss/vite';\n`,
