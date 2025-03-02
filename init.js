@@ -1,7 +1,21 @@
 const {execFileSync} = require(`child_process`);
-const {writeFileSync} = require(`fs`);
+const {mkdirSync, writeFileSync} = require(`fs`);
+const {parseArgs} = require(`util`);
 
-execFileSync(`yarn`, [`add`, `-D`, `typescript`, `eslint`, `@yarnpkg/eslint-config`], {stdio: `inherit`});
+const {values, positionals} = parseArgs({
+  options: {
+    vite: {
+      type: `boolean`,
+    },
+  },
+});
+
+const devDeps = [`typescript`, `eslint`, `@yarnpkg/eslint-config`];
+
+if (values.vite)
+  devDeps.push(`tailwindcss`, `@tailwindcss/vite`);
+
+execFileSync(`yarn`, [`add`, `-D`, ...devDeps], {stdio: `inherit`});
 console.log(``);
 execFileSync(`yarn`, [`dlx`, `@yarnpkg/sdks`, `vscode`], {stdio: `inherit`});
 
@@ -45,3 +59,61 @@ writeFileSync(`tsconfig.json`, JSON.stringify({
     `./sources/**/*.ts`
   ]
 }, null, 2) + `\n`);
+
+if (values.vite) {
+  mkdirSync(`src`);
+
+  writeFileSync(`vite.config.ts`, [
+    `import tailwindcss    from '@tailwindcss/vite';\n`,
+    `import react          from '@vitejs/plugin-react';\n`,
+    `import {defineConfig} from 'vite';\n`,
+    `\n`,
+    `export default defineConfig({\n`,
+    `  plugins: [\n`,
+    `    react(),\n`,
+    `    tailwindcss(),\n`,
+    `  ],\n`,
+    `});\n`,
+  ].join(``));
+
+  writeFileSync(`index.html`, [
+    `<!doctype html>\n`,
+    `<html>\n`,
+    `  <head>\n`,
+    `    <meta charset="UTF-8"/>\n`,
+    `    <link rel="stylesheet" href="./src/index.css"/>\n`,
+    `  </head>\n`,
+    `  <body>\n`,
+    `    <div id="root"></div>\n`,
+    `    <script type="module" src="./src/index.ts"></script>\n`,
+    `  </body>\n`,
+    `</html>\n`,
+  ].join(``));
+
+  writeFileSync(`src/index.css`, [
+    `@import "tailwindcss";\n`,
+  ].join(``));
+
+  writeFileSync(`src/index.ts`, [
+    `import './index.css';\n`,
+    `\n`,
+    `import {createRoot} from 'react-dom/client';\n`,
+    `import {StrictMode} from 'react';\n`,
+    `\n`,
+    `import {App}        from './App.tsx';\n`,
+    `\n`,
+    `createRoot(document.getElementById('root')!).render(\n`,
+    `  <StrictMode>\n`,
+    `    <App/>\n`,
+    `  </StrictMode>,\n`,
+    `);\n`,
+  ].join(``));
+
+  writeFileSync(`src/App.tsx`, [
+    `export function App() {\n`,
+    `  return (\n`,
+    `    null,\n`,
+    `  );\n`,
+    `}\n`,
+  ].join(``));
+}
