@@ -13,7 +13,10 @@ const {values, positionals} = parseArgs({
 const devDeps = [`typescript`, `eslint`, `@yarnpkg/eslint-config`, `vitest`];
 
 if (values.vite)
-  devDeps.push(`tailwindcss`, `@tailwindcss/vite`, `@vitejs/plugin-react`, `vite`, `react`, `react-dom`, `@types/react`, `@types/react-dom`);
+  devDeps.push(`tailwindcss`, `@tailwindcss/vite`, `vite`);
+
+if (values.vite && values.react)
+  devDeps.push(`react`, `react-dom`, `@types/react`, `@types/react-dom`, `@vitejs/plugin-react`);
 
 execFileSync(`yarn`, [`add`, `-D`, ...devDeps], {stdio: `inherit`});
 console.log(``);
@@ -27,12 +30,12 @@ if (!pkgJson.includes(`"type":`))
 mkdirSync(`.cursor/rules`, {recursive: true});
 
 writeFileSync(`.cursor/rules/package-manager.mdc`, [
-  `---`,
-  `description: Read this file when you need to use a package manager.`,
-  `globs:`,
-  `alwaysApply: false`,
-  `---`,
-  `Use Yarn. Never use npm or npx.`,
+  `---\n`,
+  `description: Read this file when you need to use a package manager.\n`,
+  `globs:\n`,
+  `alwaysApply: false\n`,
+  `---\n`,
+  `Use Yarn. Never use npm or npx.\n`,
 ].join(``));
 
 writeFileSync(`eslint.config.mjs`, [
@@ -81,12 +84,14 @@ if (values.vite) {
 
   writeFileSync(`vite.config.ts`, [
     `import tailwindcss    from '@tailwindcss/vite';\n`,
-    `import react          from '@vitejs/plugin-react';\n`,
+    values.react ?
+    `import react          from '@vitejs/plugin-react';\n` : ``,
     `import {defineConfig} from 'vite';\n`,
     `\n`,
     `export default defineConfig({\n`,
     `  plugins: [\n`,
-    `    react(),\n`,
+    values.react ?
+    `    react(),\n` : ``,
     `    tailwindcss(),\n`,
     `  ],\n`,
     `});\n`,
@@ -101,7 +106,10 @@ if (values.vite) {
     `  </head>\n`,
     `  <body>\n`,
     `    <div id="root"></div>\n`,
-    `    <script type="module" src="./sources/index.tsx"></script>\n`,
+    values.react ?
+    `    <script type="module" src="./sources/index.tsx"></script>\n` : ``,
+    !values.react ?
+    `    <script type="module" src="./sources/index.ts"></script>\n` : ``,
     `  </body>\n`,
     `</html>\n`,
   ].join(``));
@@ -110,26 +118,34 @@ if (values.vite) {
     `@import "tailwindcss";\n`,
   ].join(``));
 
-  writeFileSync(`sources/index.tsx`, [
-    `import './index.css';\n`,
-    `\n`,
-    `import {createRoot} from 'react-dom/client';\n`,
-    `import {StrictMode} from 'react';\n`,
-    `\n`,
-    `import {App}        from './App.tsx';\n`,
-    `\n`,
-    `createRoot(document.getElementById('root')!).render(\n`,
-    `  <StrictMode>\n`,
-    `    <App/>\n`,
-    `  </StrictMode>,\n`,
-    `);\n`,
-  ].join(``));
+  if (values.react) {
+    writeFileSync(`sources/index.tsx`, [
+      `import './index.css';\n`,
+      `\n`,
+      `import {createRoot} from 'react-dom/client';\n`,
+      `import {StrictMode} from 'react';\n`,
+      `\n`,
+      `import {App}        from './App.tsx';\n`,
+      `\n`,
+      `createRoot(document.getElementById('root')!).render(\n`,
+      `  <StrictMode>\n`,
+      `    <App/>\n`,
+      `  </StrictMode>,\n`,
+      `);\n`,
+    ].join(``));
 
-  writeFileSync(`sources/App.tsx`, [
-    `export function App() {\n`,
-    `  return (\n`,
-    `    null\n`,
-    `  );\n`,
-    `}\n`,
-  ].join(``));
+    writeFileSync(`sources/App.tsx`, [
+      `export function App() {\n`,
+      `  return (\n`,
+      `    null\n`,
+      `  );\n`,
+      `}\n`,
+    ].join(``));
+  } else {
+    writeFileSync(`sources/index.ts`, [
+      `import './index.css';\n`,
+      `\n`,
+      `const root = document.getElementById('root')!;\n`,
+    ].join(``));
+  }
 }
